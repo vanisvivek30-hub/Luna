@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign Up — IndustrySolve</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --border: rgba(59,130,246,0.15);
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --error: #ef4444;
+    --success: #10b981;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .bg-glow-1 {
+    position: fixed; pointer-events: none; z-index: 0;
+    width: 650px; height: 650px;
+    background: radial-gradient(circle, rgba(99,102,241,0.13) 0%, transparent 65%);
+    top: -150px; left: -100px; border-radius: 50%;
+  }
+  .bg-glow-2 {
+    position: fixed; pointer-events: none; z-index: 0;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 65%);
+    bottom: -80px; right: -100px; border-radius: 50%;
+  }
+  .bg-grid {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  nav {
+    position: relative; z-index: 10;
+    padding: 1.25rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem; font-weight: 800;
+    color: #fff; text-decoration: none;
+    display: flex; align-items: center; gap: 0.45rem;
+  }
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .nav-link { font-size: 0.88rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .nav-link span { color: var(--accent2); }
+  .nav-link:hover { color: var(--text); }
+
+  /* ── ROLE SELECTOR SCREEN ── */
+  .role-screen {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 3rem 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .role-screen.hidden { display: none; }
+
+  .rs-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.22);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+  }
+  .role-screen h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800; color: #fff;
+    text-align: center; margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+  .role-screen h1 .blue {
+    background: linear-gradient(90deg, #3b82f6, #818cf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .role-screen .sub {
+    color: var(--muted); text-align: center;
+    font-size: 0.95rem; max-width: 420px; margin-bottom: 3rem; line-height: 1.7;
+  }
+
+  .role-cards {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.25rem; max-width: 640px; width: 100%;
+  }
+  .role-card {
+    background: rgba(30,41,59,0.7);
+    border: 2px solid rgba(255,255,255,0.07);
+    border-radius: 18px;
+    padding: 2.25rem 1.75rem;
+    cursor: pointer;
+    transition: all 0.28s;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    position: relative; overflow: hidden;
+  }
+  .role-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .role-card:hover {
+    border-color: rgba(59,130,246,0.4);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 56px rgba(0,0,0,0.4), 0 0 40px rgba(59,130,246,0.1);
+  }
+  .role-card:hover::before { opacity: 1; }
+  .role-card.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+  }
+  .role-card-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .role-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem; font-weight: 800;
+    color: #fff; margin-bottom: 0.5rem;
+  }
+  .role-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+  .role-perks {
+    display: flex; flex-direction: column; gap: 0.4rem;
+    margin-top: 1.25rem; text-align: left;
+  }
+  .role-perk {
+    font-size: 0.78rem; color: var(--muted);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .role-perk::before { content: '✓'; color: var(--success); font-weight: 700; }
+
+  .continue-btn {
+    margin-top: 2.25rem;
+    padding: 0.9rem 3rem;
+    background: var(--accent);
+    border: none; border-radius: var(--radius-sm);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 0 24px rgba(59,130,246,0.35);
+    opacity: 0.5; pointer-events: none;
+  }
+  .continue-btn.ready { opacity: 1; pointer-events: all; }
+  .continue-btn.ready:hover {
+    background: var(--accent2);
+    box-shadow: 0 0 40px rgba(59,130,246,0.5);
+    transform: translateY(-2px);
+  }
+
+  /* ── FORM SCREEN ── */
+  .form-screen {
+    flex: 1;
+    display: none;
+    position: relative; z-index: 1;
+  }
+  .form-screen.visible {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Left panel */
+  .left-panel {
+    padding: 4rem;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative;
+  }
+  .left-panel::after {
+    content: '';
+    position: absolute; right: 0; top: 10%; bottom: 10%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(59,130,246,0.2), transparent);
+  }
+  .panel-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.22);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem; width: fit-content;
+  }
+  .left-panel h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem; font-weight: 800;
+    color: #fff; line-height: 1.15;
+    margin-bottom: 1rem; letter-spacing: -0.02em;
+  }
+  .left-panel h2 .blue {
+    background: linear-gradient(90deg, #3b82f6, #818cf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .left-panel .sub { color: var(--muted); font-size: 0.92rem; line-height: 1.75; max-width: 380px; margin-bottom: 2.5rem; }
+
+  /* Progress steps */
+  .progress-steps {
+    display: flex; flex-direction: column; gap: 0.85rem;
+  }
+  .ps-item {
+    display: flex; align-items: center; gap: 1rem;
+    opacity: 0.4; transition: opacity 0.3s;
+  }
+  .ps-item.active { opacity: 1; }
+  .ps-item.done { opacity: 0.7; }
+  .ps-num {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(59,130,246,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+    color: var(--muted); flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .ps-item.active .ps-num {
+    background: var(--accent); border-color: var(--accent);
+    color: #fff; box-shadow: 0 0 14px rgba(59,130,246,0.4);
+  }
+  .ps-item.done .ps-num { background: var(--success); border-color: var(--success); color: #fff; }
+  .ps-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .ps-desc { font-size: 0.75rem; color: var(--muted); }
+
+  /* Right panel */
+  .right-panel {
+    padding: 3rem 3.5rem;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  .form-card {
+    background: rgba(30,41,59,0.6);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 2.5rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+
+  /* Step panels */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; animation: stepIn 0.4s ease both; }
+  @keyframes stepIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+
+  .step-head { margin-bottom: 1.75rem; }
+  .step-head h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.45rem; font-weight: 800;
+    color: #fff; margin-bottom: 0.3rem;
+  }
+  .step-head p { font-size: 0.83rem; color: var(--muted); }
+
+  /* Fields */
+  .field { margin-bottom: 1.1rem; }
+  .field label { display: block; font-size: 0.79rem; font-weight: 600; color: var(--muted); margin-bottom: 0.42rem; letter-spacing: 0.03em; }
+  .input-wrap { position: relative; }
+  .input-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; pointer-events: none; opacity: 0.45; }
+  input[type="email"],
+  input[type="password"],
+  input[type="text"],
+  select {
+    width: 100%;
+    background: rgba(15,23,42,0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    padding: 0.78rem 1rem 0.78rem 2.5rem;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+  select option { background: #1e293b; }
+  input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.14); }
+  input::placeholder { color: rgba(148,163,184,0.4); }
+
+  .pw-toggle { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.83rem; transition: color 0.2s; }
+  .pw-toggle:hover { color: var(--text); }
+
+  .field-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  /* Password strength */
+  .pw-strength { margin-top: 0.5rem; }
+  .strength-bar { height: 3px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; }
+  .strength-fill { height: 100%; border-radius: 999px; width: 0%; transition: width 0.4s, background 0.4s; }
+  .strength-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
+
+  /* Terms */
+  .terms-row { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1.5rem; }
+  .terms-row input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; margin-top: 2px; flex-shrink: 0; }
+  .terms-row label { font-size: 0.79rem; color: var(--muted); line-height: 1.5; cursor: pointer; }
+  .terms-row a { color: var(--accent2); text-decoration: none; }
+  .terms-row a:hover { text-decoration: underline; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+  .btn-back {
+    flex: 0 0 auto;
+    padding: 0.85rem 1.25rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .btn-next {
+    flex: 1;
+    padding: 0.85rem;
+    background: var(--accent);
+    border: none; border-radius: var(--radius-sm);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: all 0.25s;
+    box-shadow: 0 0 20px rgba(59,130,246,0.3);
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  }
+  .btn-next:hover { background: var(--accent2); box-shadow: 0 0 36px rgba(59,130,246,0.5); transform: translateY(-1px); }
+
+  .divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+  .divider span { font-size: 0.75rem; color: var(--muted); }
+
+  .social-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+  .social-btn {
+    padding: 0.7rem;
+    background: rgba(15,23,42,0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    transition: border-color 0.2s, transform 0.2s; text-decoration: none;
+  }
+  .social-btn:hover { border-color: rgba(59,130,246,0.35); transform: translateY(-1px); }
+
+  .form-footer { text-align: center; font-size: 0.82rem; color: var(--muted); margin-top: 1.25rem; }
+  .form-footer a { color: var(--accent2); text-decoration: none; font-weight: 600; }
+
+  .error-msg { font-size: 0.75rem; color: var(--error); margin-top: 0.3rem; display: none; }
+  .field.has-error input, .field.has-error select { border-color: var(--error); }
+  .field.has-error .error-msg { display: block; }
+
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* Success toast */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
+    color: #10b981; padding: 0.85rem 1.75rem;
+    border-radius: 999px; font-size: 0.88rem; font-weight: 600;
+    transition: transform 0.4s ease; z-index: 999;
+    backdrop-filter: blur(10px);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="bg-glow-1"></div>
+<div class="bg-glow-2"></div>
+<div class="bg-grid"></div>
+
+<nav>
+  <a href="landing.html" class="logo">
+    <span class="logo-dot"></span>IndustrySolve
+  </a>
+  <a href="signin.html" class="nav-link">Already have an account? <span>Sign in →</span></a>
+</nav>
+
+<!-- ══ STEP 0: ROLE SELECTOR ══ -->
+<div class="role-screen" id="roleScreen">
+  <span class="rs-tag">✦ Join IndustrySolve</span>
+  <h1>Who are you<br>joining as?</h1>
+  <p class="sub">Choose your path. Students solve problems, organizations post them.</p>
+
+  <div class="role-cards">
+    <div class="role-card" onclick="selectRole('student', this)" id="studentCard">
+      <div class="role-card-icon">🎓</div>
+      <h3>Student / Builder</h3>
+      <p>I want to solve real-world problems and build my portfolio.</p>
+      <div class="role-perks">
+        <span class="role-perk">Browse 100+ live problems</span>
+        <span class="role-perk">Build a real portfolio</span>
+        <span class="role-perk">Get discovered by companies</span>
+      </div>
+    </div>
+    <div class="role-card" onclick="selectRole('org', this)" id="orgCard">
+      <div class="role-card-icon">🏢</div>
+      <h3>Company / Organization</h3>
+      <p>I want to post real problems and tap into student talent.</p>
+      <div class="role-perks">
+        <span class="role-perk">Post unlimited challenges</span>
+        <span class="role-perk">Review student submissions</span>
+        <span class="role-perk">Access motivated builders</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="continue-btn" id="continueBtn" onclick="goToForm()">Continue →</button>
+</div>
+
+<!-- ══ FORM SCREEN ══ -->
+<div class="form-screen" id="formScreen">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <span class="panel-tag" id="formPanelTag">✦ Student Sign Up</span>
+    <h2>Start building<br>things that<br><span class="blue">matter.</span></h2>
+    <p class="sub" id="formPanelSub">Join hundreds of students who've already ditched tutorial hell and started shipping real impact.</p>
+
+    <div class="progress-steps">
+      <div class="ps-item active" id="ps1">
+        <div class="ps-num">1</div>
+        <div><div class="ps-label">Your Details</div><div class="ps-desc">Name, email & password</div></div>
+      </div>
+      <div class="ps-item" id="ps2">
+        <div class="ps-num">2</div>
+        <div><div class="ps-label">Your Profile</div><div class="ps-desc">Skills & background</div></div>
+      </div>
+      <div class="ps-item" id="ps3">
+        <div class="ps-num">3</div>
+        <div><div class="ps-label">Ready to Build</div><div class="ps-desc">Confirm & launch</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="form-card">
+
+      <!-- STEP 1 -->
+      <div class="step-panel active" id="step1">
+        <div class="step-head">
+          <h3>Create your account</h3>
+          <p>Step 1 of 3 — Basic information</p>
+        </div>
+
+        <div class="social-btns">
+          <a href="#" class="social-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </a>
+          <a href="#" class="social-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--text)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            GitHub
+          </a>
+        </div>
+
+        <div class="divider"><span>or fill in manually</span></div>
+
+        <div class="field-row2">
+          <div class="field" id="fnField">
+            <label>First name</label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" id="fn" placeholder="Rahul"/>
+            </div>
+            <span class="error-msg">Required</span>
+          </div>
+          <div class="field" id="lnField">
+            <label>Last name</label>
+            <div class="input-wrap">
+              <span class="input-icon">👤</span>
+              <input type="text" id="ln" placeholder="Sharma"/>
+            </div>
+            <span class="error-msg">Required</span>
+          </div>
+        </div>
+
+        <div class="field" id="emailField">
+          <label>Email address</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉</span>
+            <input type="email" id="email1" placeholder="you@example.com"/>
+          </div>
+          <span class="error-msg">Enter a valid email address.</span>
+        </div>
+
+        <div class="field" id="pw1Field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="pw1" placeholder="Create a strong password" oninput="checkStrength(this.value)"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('pw1',this)">Show</button>
+          </div>
+          <div class="pw-strength">
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <div class="strength-label" id="strengthLabel">Enter a password</div>
+          </div>
+          <span class="error-msg">At least 8 characters required.</span>
+        </div>
+
+        <div class="btn-row" style="margin-top:1.25rem;">
+          <button class="btn-next" style="width:100%;" onclick="nextStep(1)">Continue →</button>
+        </div>
+
+        <div class="form-footer">
+          Already have an account? <a href="signin.html">Sign in</a>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-panel" id="step2">
+        <div class="step-head">
+          <h3 id="s2title">Your skills &amp; background</h3>
+          <p>Step 2 of 3 — Help us personalize your experience</p>
+        </div>
+
+        <!-- Student fields -->
+        <div id="studentFields">
+          <div class="field">
+            <label>College / University</label>
+            <div class="input-wrap">
+              <span class="input-icon">🏫</span>
+              <input type="text" id="college" placeholder="e.g. IIT Bombay, BITS Pilani"/>
+            </div>
+          </div>
+          <div class="field-row2">
+            <div class="field">
+              <label>Year of Study</label>
+              <div class="input-wrap">
+                <span class="input-icon">📅</span>
+                <select id="year">
+                  <option value="" disabled selected>Select year</option>
+                  <option>1st Year</option>
+                  <option>2nd Year</option>
+                  <option>3rd Year</option>
+                  <option>4th Year</option>
+                  <option>Graduate</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Domain</label>
+              <div class="input-wrap">
+                <span class="input-icon">💻</span>
+                <select id="domain">
+                  <option value="" disabled selected>Select domain</option>
+                  <option>Full-Stack</option>
+                  <option>Frontend</option>
+                  <option>Backend</option>
+                  <option>ML / Data Science</option>
+                  <option>Mobile</option>
+                  <option>DevOps</option>
+                  <option>Design</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>GitHub Profile <span style="color:rgba(148,163,184,0.5); font-weight:400;">(optional)</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">⚡</span>
+              <input type="text" placeholder="github.com/yourusername"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Org fields -->
+        <div id="orgFields" style="display:none;">
+          <div class="field">
+            <label>Organization Name</label>
+            <div class="input-wrap">
+              <span class="input-icon">🏢</span>
+              <input type="text" id="orgName" placeholder="e.g. GreenTech Labs"/>
+            </div>
+          </div>
+          <div class="field-row2">
+            <div class="field">
+              <label>Industry</label>
+              <div class="input-wrap">
+                <span class="input-icon">🏭</span>
+                <select id="industry">
+                  <option value="" disabled selected>Select industry</option>
+                  <option>Technology</option>
+                  <option>Healthcare</option>
+                  <option>Finance</option>
+                  <option>Education</option>
+                  <option>NGO / Non-profit</option>
+                  <option>Retail</option>
+                  <option>Manufacturing</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Company Size</label>
+              <div class="input-wrap">
+                <span class="input-icon">👥</span>
+                <select>
+                  <option value="" disabled selected>Select size</option>
+                  <option>1–10</option>
+                  <option>11–50</option>
+                  <option>51–200</option>
+                  <option>200+</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Website <span style="color:rgba(148,163,184,0.5); font-weight:400;">(optional)</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🌐</span>
+              <input type="text" placeholder="https://yourcompany.com"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:1.25rem;">
+          <button class="btn-back" onclick="goStep(1)">← Back</button>
+          <button class="btn-next" onclick="nextStep(2)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-panel" id="step3">
+        <div class="step-head">
+          <h3>Almost there! 🚀</h3>
+          <p>Step 3 of 3 — Review &amp; launch</p>
+        </div>
+
+        <!-- Summary card -->
+        <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem;">
+          <div style="display:flex; align-items:center; gap:0.85rem; margin-bottom:1rem;">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#818cf8);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#fff;" id="summaryAvatar">R</div>
+            <div>
+              <div style="font-weight:700;color:var(--text); font-size:0.95rem;" id="summaryName">Rahul Sharma</div>
+              <div style="font-size:0.78rem;color:var(--muted);" id="summaryEmail">you@example.com</div>
+            </div>
+            <div style="margin-left:auto;">
+              <span style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.25);color:var(--accent2);font-size:0.7rem;font-weight:600;padding:0.25rem 0.65rem;border-radius:999px;" id="summaryRole">Student</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:1.5rem;padding-top:0.85rem;border-top:1px solid rgba(255,255,255,0.06);">
+            <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;">DOMAIN</div><div style="font-size:0.82rem;font-weight:600;color:var(--text);" id="summaryDomain">—</div></div>
+            <div><div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.2rem;">INSTITUTION</div><div style="font-size:0.82rem;font-weight:600;color:var(--text);" id="summaryInst">—</div></div>
+          </div>
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="terms"/>
+          <label for="terms">I agree to IndustrySolve's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I understand my submitted work may be reviewed by organizations.</label>
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="newsletter" checked/>
+          <label for="newsletter">Send me updates about new problems and platform news.</label>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-back" onclick="goStep(2)">← Back</button>
+          <button class="btn-next" onclick="handleSubmit()" id="launchBtn">
+            <span id="launchText">Launch My Account 🚀</span>
+            <span class="spinner" id="launchSpinner"></span>
+          </button>
+        </div>
+
+        <div class="form-footer" style="margin-top:1rem;">
+          Already have an account? <a href="signin.html">Sign in</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">🎉 Account created! Welcome to IndustrySolve.</div>
+
+<script>
+  let selectedRole = null;
+  let currentStep = 1;
+
+  function selectRole(role, el) {
+    selectedRole = role;
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const btn = document.getElementById('continueBtn');
+    btn.classList.add('ready');
+  }
+
+  function goToForm() {
+    if (!selectedRole) return;
+    document.getElementById('roleScreen').classList.add('hidden');
+    document.getElementById('formScreen').classList.add('visible');
+
+    if (selectedRole === 'org') {
+      document.getElementById('formPanelTag').textContent = '✦ Organization Sign Up';
+      document.getElementById('formPanelSub').textContent = 'Post real problems and connect with motivated student builders ready to ship solutions.';
+      document.getElementById('s2title').textContent = 'Organization details';
+      document.getElementById('studentFields').style.display = 'none';
+      document.getElementById('orgFields').style.display = 'block';
+      document.getElementById('summaryRole').textContent = 'Organization';
+    }
+  }
+
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? 'Show' : 'Hide';
+  }
+
+  function checkStrength(val) {
+    const fill = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const configs = [
+      { w: '0%', bg: '', txt: 'Enter a password' },
+      { w: '25%', bg: '#ef4444', txt: 'Weak' },
+      { w: '50%', bg: '#f59e0b', txt: 'Fair' },
+      { w: '75%', bg: '#3b82f6', txt: 'Good' },
+      { w: '100%', bg: '#10b981', txt: 'Strong 💪' },
+    ];
+    const c = configs[score];
+    fill.style.width = c.w; fill.style.background = c.bg;
+    label.textContent = c.txt; label.style.color = c.bg || 'var(--muted)';
+  }
+
+  function goStep(n) {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    document.getElementById('ps' + currentStep).classList.remove('active');
+    if (currentStep < n) document.getElementById('ps' + currentStep).classList.add('done');
+    else document.getElementById('ps' + currentStep).classList.remove('done');
+    currentStep = n;
+    document.getElementById('step' + n).classList.add('active');
+    document.getElementById('ps' + n).classList.add('active');
+  }
+
+  function nextStep(from) {
+    if (from === 1) {
+      let ok = true;
+      const fn = document.getElementById('fn');
+      const ln = document.getElementById('ln');
+      const em = document.getElementById('email1');
+      const pw = document.getElementById('pw1');
+
+      ['fnField','lnField','emailField','pw1Field'].forEach(id => document.getElementById(id).classList.remove('has-error'));
+
+      if (!fn.value.trim()) { document.getElementById('fnField').classList.add('has-error'); ok = false; }
+      if (!ln.value.trim()) { document.getElementById('lnField').classList.add('has-error'); ok = false; }
+      if (!em.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) { document.getElementById('emailField').classList.add('has-error'); ok = false; }
+      if (!pw.value || pw.value.length < 8) { document.getElementById('pw1Field').classList.add('has-error'); ok = false; }
+
+      if (!ok) return;
+
+      // Update summary
+      document.getElementById('summaryAvatar').textContent = fn.value[0].toUpperCase();
+      document.getElementById('summaryName').textContent = fn.value + ' ' + ln.value;
+      document.getElementById('summaryEmail').textContent = em.value;
+    }
+
+    if (from === 2) {
+      if (selectedRole === 'student') {
+        const domain = document.getElementById('domain').value;
+        const college = document.getElementById('college').value;
+        document.getElementById('summaryDomain').textContent = domain || '—';
+        document.getElementById('summaryInst').textContent = college || '—';
+      } else {
+        const org = document.getElementById('orgName').value;
+        const ind = document.getElementById('industry').value;
+        document.getElementById('summaryDomain').textContent = ind || '—';
+        document.getElementById('summaryInst').textContent = org || '—';
+      }
+    }
+
+    goStep(from + 1);
+  }
+
+  function handleSubmit() {
+    const terms = document.getElementById('terms');
+    if (!terms.checked) {
+      terms.style.outline = '2px solid #ef4444';
+      setTimeout(() => terms.style.outline = '', 2000);
+      return;
+    }
+
+    const name = selectedRole === 'org'
+      ? document.getElementById('orgName').value.trim() || 'Organization'
+      : (document.getElementById('fn').value.trim() + ' ' + document.getElementById('ln').value.trim()).trim() || 'New Member';
+    const email = document.getElementById('email1').value.trim();
+    const password = document.getElementById('pw1').value.trim();
+
+    // Show loading
+    document.getElementById('launchText').textContent = 'Creating account...';
+    document.getElementById('launchSpinner').style.display = 'block';
+    document.getElementById('launchBtn').disabled = true;
+
+    // Prepare signup data
+    const signupData = {
+      email,
+      password,
+      name,
+      role: selectedRole || 'student'
+    };
+
+    // Add role-specific fields
+    if (selectedRole === 'student') {
+      signupData.college = document.getElementById('college').value.trim();
+      signupData.domain = document.getElementById('domain').value.trim();
+    } else {
+      signupData.org_name = document.getElementById('orgName').value.trim();
+      signupData.industry = document.getElementById('industry').value.trim();
+    }
+
+    // Call backend API via service
+    apiSignup(signupData).then(data => {
+      if (data.success && data.user) {
+        // Show success toast
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        
+        // Redirect
+        setTimeout(() => { window.location.href = 'problem.html'; }, 1600);
+      } else {
+        showErrorMessage(data.message || 'Signup failed');
+        document.getElementById('launchText').textContent = 'Create Account →';
+        document.getElementById('launchSpinner').style.display = 'none';
+        document.getElementById('launchBtn').disabled = false;
+      }
+    });
+  }
+</script>
+</body>
+</html>

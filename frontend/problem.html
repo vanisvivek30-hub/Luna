@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Industrysolve — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="problem.css"/>
+<script src="config.js"></script>
+<script src="api.js"></script>
+</head>
+<body>
+ 
+<!-- ═══════════ ROLE SELECTOR ═══════════ -->
+<div id="roleSelector">
+  <div class="rs-logo"><span class="dot"></span> IndustrySolve</div>
+  <h1 class="rs-title">Welcome back to<br><em>IndustrySolve</em></h1>
+  <p class="rs-sub">Choose your dashboard to continue</p>
+  <div class="rs-cards">
+    <div class="rs-card" onclick="launchApp('student')">
+      <span class="rs-icon">🎓</span>
+      <h3>Student Dashboard</h3>
+      <p>Browse problems, apply, build projects, and grow your real-world portfolio.</p>
+      <div class="rs-card-perks">
+        <span class="rs-perk">Browse live problems</span>
+        <span class="rs-perk">Track your applications</span>
+        <span class="rs-perk">Submit solutions</span>
+      </div>
+    </div>
+    <div class="rs-card" onclick="launchApp('org')">
+      <span class="rs-icon">🏢</span>
+      <h3>Organization Dashboard</h3>
+      <p>Post real problems, review submissions, and connect with student builders.</p>
+      <div class="rs-card-perks">
+        <span class="rs-perk">Post challenges</span>
+        <span class="rs-perk">Review applicants</span>
+        <span class="rs-perk">Manage submissions</span>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ═══════════ APP SHELL ═══════════ -->
+<div id="appShell">
+ 
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-dot"></span>
+      <span class="sidebar-logo-text">IndustrySolve</span>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebarAvatar">R</div>
+      <div>
+        <div class="user-name" id="sidebarName">Rahul Sharma</div>
+        <div class="user-role" id="sidebarRoleLabel">Student</div>
+      </div>
+      <span class="user-badge badge-student" id="sidebarBadge">Student</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <!-- Injected by JS -->
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="nav-item logout" onclick="exitApp()">
+        <span class="nav-icon">⬅</span>
+        <span>Switch Role</span>
+      </div>
+    </div>
+  </aside>
+ 
+  <!-- MAIN -->
+  <div class="main-area">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-breadcrumb" id="topbarBreadcrumb">Overview</div>
+      </div>
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search problems, organizations…" id="searchInput" oninput="handleSearch(this.value)"/>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn"><span>🔔</span><span class="notif-dot"></span></button>
+        <button class="topbar-btn">⚙</button>
+      </div>
+    </header>
+ 
+    <!-- PAGE AREA -->
+    <div class="page-area" id="pageArea">
+ 
+      <!-- ══════ STUDENT PAGES ══════ -->
+ 
+      <!-- S: Dashboard -->
+      <div class="page" id="page-s-dashboard">
+        <div class="stats-row">
+          <div class="stat-card" style="--accent-color:var(--accent);--icon-bg:rgba(59,130,246,0.12)">
+            <div class="stat-icon-wrap">🧩</div>
+            <div><div class="stat-val">12</div><div class="stat-label">Problems Available</div><div class="stat-change stat-up">↑ 3 new today</div></div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--warning);--icon-bg:rgba(245,158,11,0.12)">
+            <div class="stat-icon-wrap">📋</div>
+            <div><div class="stat-val">4</div><div class="stat-label">My Applications</div><div class="stat-change stat-info">2 pending review</div></div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--success);--icon-bg:rgba(16,185,129,0.12)">
+            <div class="stat-icon-wrap">✅</div>
+            <div><div class="stat-val">2</div><div class="stat-label">Submitted</div><div class="stat-change stat-up">↑ 1 reviewed</div></div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--purple);--icon-bg:rgba(139,92,246,0.12)">
+            <div class="stat-icon-wrap">🏆</div>
+            <div><div class="stat-val">1</div><div class="stat-label">Portfolio Items</div><div class="stat-change stat-info">Keep building!</div></div>
+          </div>
+        </div>
+ 
+        <div class="dash-grid">
+          <div>
+            <div class="sec-header">
+              <span class="sec-title">Recent Problems</span>
+              <button class="sec-action" onclick="navigate('s-browse')">View all →</button>
+            </div>
+            <div class="problems-grid" style="grid-template-columns:1fr 1fr;">
+              <div class="problem-card" onclick="openProblemDetail('p1')">
+                <div class="pc-top">
+                  <div class="pc-badges"><span class="badge badge-easy">Easy</span><span class="badge badge-new">✦ New</span></div>
+                </div>
+                <div class="pc-org"><div class="org-avatar" style="background:rgba(16,185,129,0.15)">🌱</div>GreenTech Labs</div>
+                <div class="pc-title">Carbon Footprint Tracker</div>
+                <div class="pc-desc">Build a web app to track and visualize carbon emissions for small businesses...</div>
+                <div class="pc-footer">
+                  <span class="pc-deadline">🕐 12 days left</span>
+                  <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p1')">View Details</button>
+                </div>
+              </div>
+              <div class="problem-card" onclick="openProblemDetail('p2')">
+                <div class="pc-top">
+                  <div class="pc-badges"><span class="badge badge-medium">Medium</span><span class="badge badge-hot">🔥 Hot</span></div>
+                </div>
+                <div class="pc-org"><div class="org-avatar" style="background:rgba(239,68,68,0.15)">🏥</div>MediCore</div>
+                <div class="pc-title">Patient Wait-Time Predictor</div>
+                <div class="pc-desc">Train an ML model to predict hospital wait times using historical patient data...</div>
+                <div class="pc-footer">
+                  <span class="pc-deadline">🕐 5 days left</span>
+                  <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p2')">View Details</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="sec-header"><span class="sec-title">Recent Activity</span></div>
+            <div class="card" style="padding:1.25rem;">
+              <div class="activity-list">
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(59,130,246,0.12)">📋</div>
+                  <div class="act-text"><strong>Applied</strong> to Carbon Footprint Tracker</div>
+                  <div class="act-time">2h ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(16,185,129,0.12)">✅</div>
+                  <div class="act-text"><strong>Submitted</strong> solution for Inventory System</div>
+                  <div class="act-time">1d ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(245,158,11,0.12)">🔍</div>
+                  <div class="act-text"><strong>Viewed</strong> Patient Wait-Time Predictor</div>
+                  <div class="act-time">2d ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(139,92,246,0.12)">🏆</div>
+                  <div class="act-text">Solution <strong>approved</strong> by EduBridge NGO</div>
+                  <div class="act-time">5d ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- S: Browse Problems -->
+      <div class="page" id="page-s-browse">
+        <div class="page-header">
+          <h2>Browse Problems</h2>
+          <p>Find real-world challenges from companies and organizations</p>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Easy</button>
+          <button class="filter-btn">Medium</button>
+          <button class="filter-btn">Hard</button>
+          <button class="filter-btn">Full-Stack</button>
+          <button class="filter-btn">ML / Data</button>
+          <button class="filter-btn">Backend</button>
+        </div>
+        <div class="problems-grid" id="problemsGrid">
+          <div class="problem-card" onclick="openProblemDetail('p1')">
+            <div class="pc-top"><div class="pc-badges"><span class="badge badge-easy">Easy</span><span class="badge badge-new">✦ New</span></div></div>
+            <div class="pc-org"><div class="org-avatar" style="background:rgba(16,185,129,0.15)">🌱</div>GreenTech Labs</div>
+            <div class="pc-title">Carbon Footprint Tracker</div>
+            <div class="pc-desc">Build a web app to track and visualize carbon emissions for small businesses across multiple categories.</div>
+            <div class="pc-footer"><span class="pc-deadline">🕐 12 days left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p1')">View Details</button></div>
+          </div>
+          <div class="problem-card" onclick="openProblemDetail('p2')">
+            <div class="pc-top"><div class="pc-badges"><span class="badge badge-medium">Medium</span><span class="badge badge-hot">🔥 Hot</span></div></div>
+            <div class="pc-org"><div class="org-avatar" style="background:rgba(239,68,68,0.15)">🏥</div>MediCore</div>
+            <div class="pc-title">Patient Wait-Time Predictor</div>
+            <div class="pc-desc">Train an ML model to predict hospital wait times using historical patient data and appointment records.</div>
+            <div class="pc-footer"><span class="pc-deadline">🕐 5 days left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p2')">View Details</button></div>
+          </div>
+          <div class="problem-card" onclick="openProblemDetail('p3')">
+            <div class="pc-top"><div class="pc-badges"><span class="badge badge-easy">Easy</span></div></div>
+            <div class="pc-org"><div class="org-avatar" style="background:rgba(59,130,246,0.15)">📦</div>RetailX</div>
+            <div class="pc-title">Smart Inventory System</div>
+            <div class="pc-desc">Design a RESTful API for real-time inventory tracking with low-stock alerts and supplier integration.</div>
+            <div class="pc-footer"><span class="pc-deadline">🕐 20 days left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p3')">View Details</button></div>
+          </div>
+          <div class="problem-card" onclick="openProblemDetail('p4')">
+            <div class="pc-top"><div class="pc-badges"><span class="badge badge-hard">Hard</span><span class="badge badge-deadline">⏰ Closing</span></div></div>
+            <div class="pc-org"><div class="org-avatar" style="background:rgba(245,158,11,0.15)">🎓</div>EduBridge NGO</div>
+            <div class="pc-title">Student Dropout Early Alert</div>
+            <div class="pc-desc">Build a predictive analytics dashboard that identifies at-risk students based on engagement patterns.</div>
+            <div class="pc-footer"><span class="pc-deadline">🕐 3 days left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p4')">View Details</button></div>
+          </div>
+          <div class="problem-card" onclick="openProblemDetail('p5')">
+            <div class="pc-top"><div class="pc-badges"><span class="badge badge-medium">Medium</span><span class="badge badge-new">✦ New</span></div></div>
+            <div class="pc-org"><div class="org-avatar" style="background:rgba(139,92,246,0.15)">🚗</div>UrbanMove</div>
+            <div class="pc-title">Route Optimization Engine</div>
+            <div class="pc-desc">Implement a graph algorithm to optimize delivery routes for a last-mile logistics startup in metro areas.</div>
+            <div class="pc-footer"><span class="pc-deadline">🕐 18 days left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p5')">View Details</button></div>
+          </div>
+          <div class="problem-card" onclick="openProblemDetail('p6')">
+            <div class="pc-top"><div class="pc-badges"><span class="badge badge-easy">Easy</span></div></div>
+            <div class="pc-org"><div class="org-avatar" style="background:rgba(20,184,166,0.15)">💰</div>FinlitIndia</div>
+            <div class="pc-title">Personal Finance Dashboard</div>
+            <div class="pc-desc">Create an interactive dashboard that helps users visualize spending habits and set savings goals.</div>
+            <div class="pc-footer"><span class="pc-deadline">🕐 25 days left</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openProblemDetail('p6')">View Details</button></div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- S: Problem Detail -->
+      <div class="page" id="page-s-detail">
+        <button class="btn btn-ghost btn-sm" onclick="goBack()" style="margin-bottom:1.25rem;">← Back to Problems</button>
+        <div class="detail-layout">
+          <div class="detail-card">
+            <div class="detail-header">
+              <div class="detail-org">
+                <div class="detail-org-logo" id="detailOrgLogo" style="background:rgba(16,185,129,0.15)">🌱</div>
+                <div>
+                  <div class="detail-org-name" id="detailOrgName">GreenTech Labs</div>
+                  <div class="detail-org-verified">✓ Verified Organization</div>
+                </div>
+              </div>
+              <h1 class="detail-title" id="detailTitle">Carbon Footprint Tracker</h1>
+              <div class="detail-badges" id="detailBadges">
+                <span class="badge badge-easy">Easy</span>
+                <span class="badge badge-new">✦ New</span>
+                <span class="badge badge-new">Full-Stack</span>
+              </div>
+            </div>
+            <div class="detail-section">
+              <h4>About This Problem</h4>
+              <p id="detailDesc">Build a web application that helps small businesses track, visualize, and reduce their carbon footprint across energy usage, transportation, and waste categories. The app should provide actionable insights and monthly reports.</p>
+            </div>
+            <div class="detail-section">
+              <h4>Requirements</h4>
+              <ul class="req-list" id="detailReqs">
+                <li>User authentication and multi-company support</li>
+                <li>Dashboard with real-time emissions visualization (charts)</li>
+                <li>Category-based input forms (energy, travel, waste)</li>
+                <li>Monthly PDF report generation</li>
+                <li>RESTful API backend with a proper database schema</li>
+              </ul>
+            </div>
+            <div class="detail-section">
+              <h4>Tech Stack Suggestion</h4>
+              <p>React / Vue frontend, Node.js or Django backend, PostgreSQL, Chart.js or D3 for visualizations.</p>
+            </div>
+          </div>
+          <div class="detail-sidebar">
+            <div class="sidebar-card">
+              <h4>Details</h4>
+              <div class="info-row"><span class="label">Difficulty</span><span class="val" id="detailDiff"><span class="badge badge-easy">Easy</span></span></div>
+              <div class="info-row"><span class="label">Deadline</span><span class="val deadline-urgent" id="detailDeadline">April 20, 2026</span></div>
+              <div class="info-row"><span class="label">Applicants</span><span class="val" id="detailApplicants">14 students</span></div>
+              <div class="info-row"><span class="label">Domain</span><span class="val" id="detailDomain">Full-Stack</span></div>
+              <div class="info-row"><span class="label">Posted</span><span class="val">March 28, 2026</span></div>
+            </div>
+            <div class="sidebar-card">
+              <h4>Actions</h4>
+              <div class="action-buttons">
+                <button class="btn btn-primary btn-full" onclick="applyNow()">🚀 Apply Now</button>
+                <button class="btn btn-success btn-full" onclick="navigate('s-submission')">📎 Submit Solution</button>
+              </div>
+            </div>
+            <div class="sidebar-card">
+              <h4>Organization</h4>
+              <p style="font-size:0.82rem;color:var(--text2);line-height:1.65;">GreenTech Labs is a climate-tech startup building tools to help businesses achieve net-zero emissions by 2030.</p>
+              <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <span class="badge badge-new">🌱 Verified</span>
+                <span class="badge badge-new">3 Problems</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- S: My Applications -->
+      <div class="page" id="page-s-applications">
+        <div class="page-header"><h2>My Applications</h2><p>Track all the problems you've applied to</p></div>
+        <div class="filter-bar">
+          <button class="filter-btn active">All (4)</button>
+          <button class="filter-btn">Applied (2)</button>
+          <button class="filter-btn">Submitted (2)</button>
+        </div>
+        <div class="app-list">
+          <div class="app-item">
+            <div class="app-org-icon" style="background:rgba(16,185,129,0.12)">🌱</div>
+            <div class="app-info">
+              <div class="app-title">Carbon Footprint Tracker</div>
+              <div class="app-org">GreenTech Labs · Full-Stack</div>
+              <div class="app-date">Applied April 2, 2026</div>
+            </div>
+            <div class="app-actions">
+              <span class="badge badge-applied">Applied</span>
+              <button class="btn btn-success btn-sm" onclick="navigate('s-submission')">Submit Solution</button>
+              <button class="btn btn-ghost btn-sm" onclick="openProblemDetail('p1')">View</button>
+            </div>
+          </div>
+          <div class="app-item">
+            <div class="app-org-icon" style="background:rgba(239,68,68,0.12)">🏥</div>
+            <div class="app-info">
+              <div class="app-title">Patient Wait-Time Predictor</div>
+              <div class="app-org">MediCore · ML / Data Science</div>
+              <div class="app-date">Applied March 28, 2026</div>
+            </div>
+            <div class="app-actions">
+              <span class="badge badge-applied">Applied</span>
+              <button class="btn btn-success btn-sm" onclick="navigate('s-submission')">Submit Solution</button>
+              <button class="btn btn-ghost btn-sm" onclick="openProblemDetail('p2')">View</button>
+            </div>
+          </div>
+          <div class="app-item">
+            <div class="app-org-icon" style="background:rgba(59,130,246,0.12)">📦</div>
+            <div class="app-info">
+              <div class="app-title">Smart Inventory System</div>
+              <div class="app-org">RetailX · Backend</div>
+              <div class="app-date">Applied March 15, 2026</div>
+            </div>
+            <div class="app-actions">
+              <span class="badge badge-submitted">Submitted</span>
+              <button class="btn btn-ghost btn-sm" onclick="navigate('s-submission')">View Submission</button>
+              <button class="btn btn-ghost btn-sm" onclick="openProblemDetail('p3')">View</button>
+            </div>
+          </div>
+          <div class="app-item">
+            <div class="app-org-icon" style="background:rgba(245,158,11,0.12)">🎓</div>
+            <div class="app-info">
+              <div class="app-title">Student Dropout Early Alert</div>
+              <div class="app-org">EduBridge NGO · Analytics</div>
+              <div class="app-date">Applied March 10, 2026</div>
+            </div>
+            <div class="app-actions">
+              <span class="badge badge-submitted">Submitted ✓</span>
+              <button class="btn btn-ghost btn-sm" onclick="navigate('s-submission')">View Submission</button>
+              <button class="btn btn-ghost btn-sm" onclick="openProblemDetail('p4')">View</button>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- S: Submissions -->
+      <div class="page" id="page-s-submission">
+        <button class="btn btn-ghost btn-sm" onclick="goBackToApps()" style="margin-bottom:1.25rem;">← Back to Applications</button>
+        <div class="success-banner" id="submissionBanner">
+          <span class="icon">✅</span>
+          <p>Your solution has been submitted successfully! The organization will review it shortly.</p>
+        </div>
+        <div class="submission-layout">
+          <div>
+            <div class="card" style="padding:2rem; margin-bottom:1.25rem;">
+              <h3 style="font-family:'Instrument Serif',serif;font-size:1.2rem;color:#fff;margin-bottom:0.35rem;font-weight:400;">Submit Your Solution</h3>
+              <p style="font-size:0.83rem;color:var(--text2);margin-bottom:1.75rem;">For: <strong style="color:var(--text);">Carbon Footprint Tracker</strong> — GreenTech Labs</p>
+ 
+              <div class="form-group">
+                <label>GitHub / Project Link *</label>
+                <input type="url" class="form-input" id="githubLink" placeholder="https://github.com/yourusername/project"/>
+              </div>
+              <div class="form-group">
+                <label>Live Demo URL <span style="color:var(--text3);font-weight:400;">(optional)</span></label>
+                <input type="url" class="form-input" placeholder="https://your-demo.vercel.app"/>
+              </div>
+              <div class="form-group">
+                <label>Project Description</label>
+                <textarea class="form-input" placeholder="Briefly describe your approach, tech stack used, and any challenges you overcame..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Short Video Walkthrough <span style="color:var(--text3);font-weight:400;">(optional)</span></label>
+                <input type="url" class="form-input" placeholder="https://loom.com/share/..."/>
+              </div>
+              <button class="btn btn-primary" onclick="submitSolution()" style="margin-top:0.5rem;">📎 Submit Solution</button>
+            </div>
+          </div>
+          <div>
+            <div class="status-card" style="margin-bottom:1rem;">
+              <h4 style="font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.75rem;">Submission Status</h4>
+              <div class="status-item">
+                <div class="status-dot dot-success"></div>
+                <div><div class="status-label">Application Accepted</div><div class="status-time">March 28 · Approved</div></div>
+              </div>
+              <div class="status-item">
+                <div class="status-dot dot-pending"></div>
+                <div><div class="status-label">Solution Submitted</div><div class="status-time">Waiting for your submission</div></div>
+              </div>
+              <div class="status-item">
+                <div class="status-dot dot-idle"></div>
+                <div><div class="status-label">Under Review</div><div class="status-time">—</div></div>
+              </div>
+              <div class="status-item">
+                <div class="status-dot dot-idle"></div>
+                <div><div class="status-label">Final Decision</div><div class="status-time">—</div></div>
+              </div>
+            </div>
+            <div class="card" style="padding:1.25rem;">
+              <h4 style="font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.85rem;">Deadline</h4>
+              <div style="font-size:1.2rem;font-family:'Instrument Serif',serif;color:var(--warning);margin-bottom:0.35rem;">April 20, 2026</div>
+              <div style="font-size:0.78rem;color:var(--text3);">12 days remaining</div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- ══════ ORG PAGES ══════ -->
+ 
+      <!-- O: Dashboard -->
+      <div class="page" id="page-o-dashboard">
+        <div class="stats-row">
+          <div class="stat-card" style="--accent-color:var(--purple);--icon-bg:rgba(139,92,246,0.12)">
+            <div class="stat-icon-wrap">📋</div>
+            <div><div class="stat-val">5</div><div class="stat-label">Problems Posted</div><div class="stat-change stat-up">↑ 1 this week</div></div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--accent);--icon-bg:rgba(59,130,246,0.12)">
+            <div class="stat-icon-wrap">👥</div>
+            <div><div class="stat-val">38</div><div class="stat-label">Total Applicants</div><div class="stat-change stat-up">↑ 7 this week</div></div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--success);--icon-bg:rgba(16,185,129,0.12)">
+            <div class="stat-icon-wrap">✅</div>
+            <div><div class="stat-val">12</div><div class="stat-label">Solutions Received</div><div class="stat-change stat-info">3 under review</div></div>
+          </div>
+          <div class="stat-card" style="--accent-color:var(--warning);--icon-bg:rgba(245,158,11,0.12)">
+            <div class="stat-icon-wrap">⏰</div>
+            <div><div class="stat-val">2</div><div class="stat-label">Closing Soon</div><div class="stat-change stat-info">Within 7 days</div></div>
+          </div>
+        </div>
+ 
+        <div class="dash-grid">
+          <div>
+            <div class="sec-header">
+              <span class="sec-title">Active Problems</span>
+              <button class="sec-action" onclick="navigate('o-problems')">View all →</button>
+            </div>
+            <div class="my-problems-list">
+              <div class="mp-item">
+                <div class="mp-icon" style="background:rgba(16,185,129,0.12)">🌱</div>
+                <div class="mp-info">
+                  <div class="mp-title">Carbon Footprint Tracker</div>
+                  <div class="mp-meta"><span class="badge badge-easy" style="font-size:0.65rem;">Easy</span><span class="mp-dot"></span><span>14 applicants</span><span class="mp-dot"></span><span>12 days left</span></div>
+                </div>
+                <div class="mp-actions">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('o-applicants')">View Applicants</button>
+                </div>
+              </div>
+              <div class="mp-item">
+                <div class="mp-icon" style="background:rgba(239,68,68,0.12)">🏥</div>
+                <div class="mp-info">
+                  <div class="mp-title">Patient Wait-Time Predictor</div>
+                  <div class="mp-meta"><span class="badge badge-medium" style="font-size:0.65rem;">Medium</span><span class="mp-dot"></span><span>9 applicants</span><span class="mp-dot"></span><span style="color:var(--warning);">5 days left</span></div>
+                </div>
+                <div class="mp-actions">
+                  <button class="btn btn-ghost btn-sm" onclick="navigate('o-applicants')">View Applicants</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="sec-header"><span class="sec-title">Recent Activity</span></div>
+            <div class="card" style="padding:1.25rem;">
+              <div class="activity-list">
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(59,130,246,0.12)">👤</div>
+                  <div class="act-text"><strong>Rahul S.</strong> applied to Carbon Footprint Tracker</div>
+                  <div class="act-time">1h ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(16,185,129,0.12)">📎</div>
+                  <div class="act-text"><strong>Priya M.</strong> submitted a solution</div>
+                  <div class="act-time">3h ago</div>
+                </div>
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(245,158,11,0.12)">⏰</div>
+                  <div class="act-text">Problem <strong>Patient Predictor</strong> closing in 5 days</div>
+                  <div class="act-time">Today</div>
+                </div>
+                <div class="activity-item">
+                  <div class="act-icon" style="background:rgba(139,92,246,0.12)">👤</div>
+                  <div class="act-text"><strong>Arun K.</strong> applied to Wait-Time Predictor</div>
+                  <div class="act-time">Yesterday</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- O: Post Problem -->
+      <div class="page" id="page-o-post">
+        <div class="page-header"><h2>Post a Problem</h2><p>Share a real challenge for students to solve</p></div>
+        <div class="success-banner" id="postBanner">
+          <span class="icon">✅</span>
+          <p>Problem posted successfully! Students can now apply and build solutions.</p>
+        </div>
+        <div class="post-layout">
+          <div class="post-card">
+            <div class="form-group">
+              <label>Problem Title *</label>
+              <input type="text" class="form-input" placeholder="e.g. Carbon Footprint Tracker for Small Businesses"/>
+            </div>
+            <div class="form-group">
+              <label>Full Description *</label>
+              <textarea class="form-input" style="min-height:140px;" placeholder="Describe the problem in detail. What needs to be built? What is the context? What will students learn?"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Requirements</label>
+              <textarea class="form-input" style="min-height:100px;" placeholder="List specific technical or functional requirements (one per line)&#10;e.g.&#10;- User authentication&#10;- REST API&#10;- Data visualization dashboard"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Difficulty *</label>
+                <select class="form-input">
+                  <option disabled selected>Select difficulty</option>
+                  <option>Easy</option>
+                  <option>Medium</option>
+                  <option>Hard</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Domain / Category *</label>
+                <select class="form-input">
+                  <option disabled selected>Select domain</option>
+                  <option>Full-Stack</option>
+                  <option>Frontend</option>
+                  <option>Backend</option>
+                  <option>ML / Data Science</option>
+                  <option>Mobile</option>
+                  <option>DevOps</option>
+                  <option>Design</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Deadline *</label>
+                <input type="date" class="form-input"/>
+              </div>
+              <div class="form-group">
+                <label>Max Applicants <span style="color:var(--text3);font-weight:400;">(optional)</span></label>
+                <input type="number" class="form-input" placeholder="e.g. 20"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Tech Stack Hint <span style="color:var(--text3);font-weight:400;">(optional)</span></label>
+              <input type="text" class="form-input" placeholder="e.g. React, Node.js, PostgreSQL, Python"/>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
+              <button class="btn btn-primary" onclick="postProblem()">📋 Post Problem</button>
+              <button class="btn btn-ghost">Save as Draft</button>
+            </div>
+          </div>
+          <div>
+            <div class="tips-card">
+              <h4 style="font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:1rem;">Tips for a Great Problem</h4>
+              <div class="tip-item"><span class="tip-icon">🎯</span><div class="tip-text"><strong>Be specific</strong> — vague problems get fewer quality applications.</div></div>
+              <div class="tip-item"><span class="tip-icon">📐</span><div class="tip-text"><strong>Define requirements clearly</strong> — students need a clear scope to work with.</div></div>
+              <div class="tip-item"><span class="tip-icon">⏰</span><div class="tip-text"><strong>Give enough time</strong> — 2–4 weeks is ideal for most projects.</div></div>
+              <div class="tip-item"><span class="tip-icon">💡</span><div class="tip-text"><strong>Suggest a stack</strong> — helps students prepare the right tools.</div></div>
+              <div class="tip-item"><span class="tip-icon">🤝</span><div class="tip-text"><strong>Mention mentorship</strong> — students love organizations that engage.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- O: My Problems -->
+      <div class="page" id="page-o-problems">
+        <div class="page-header"><h2>My Problems</h2><p>Manage all problems you've posted</p></div>
+        <div class="filter-bar">
+          <button class="filter-btn active">All (5)</button>
+          <button class="filter-btn">Active (3)</button>
+          <button class="filter-btn">Closing Soon (2)</button>
+          <button class="filter-btn">Closed (0)</button>
+        </div>
+        <div class="my-problems-list">
+          <div class="mp-item">
+            <div class="mp-icon" style="background:rgba(16,185,129,0.12)">🌱</div>
+            <div class="mp-info">
+              <div class="mp-title">Carbon Footprint Tracker</div>
+              <div class="mp-meta"><span class="badge badge-easy" style="font-size:0.65rem;">Easy</span><span class="badge badge-new" style="font-size:0.65rem;">Full-Stack</span><span class="mp-dot"></span><span>14 applicants · 3 submitted</span><span class="mp-dot"></span><span>12 days left</span></div>
+            </div>
+            <div class="mp-actions">
+              <button class="btn btn-primary btn-sm" onclick="navigate('o-applicants')">View Applicants (14)</button>
+              <button class="btn btn-ghost btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="mp-item">
+            <div class="mp-icon" style="background:rgba(239,68,68,0.12)">🏥</div>
+            <div class="mp-info">
+              <div class="mp-title">Patient Wait-Time Predictor</div>
+              <div class="mp-meta"><span class="badge badge-medium" style="font-size:0.65rem;">Medium</span><span class="badge badge-deadline" style="font-size:0.65rem;">⏰ Closing</span><span class="mp-dot"></span><span>9 applicants · 5 submitted</span><span class="mp-dot"></span><span style="color:var(--warning);">5 days left</span></div>
+            </div>
+            <div class="mp-actions">
+              <button class="btn btn-primary btn-sm" onclick="navigate('o-applicants')">View Applicants (9)</button>
+              <button class="btn btn-ghost btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="mp-item">
+            <div class="mp-icon" style="background:rgba(59,130,246,0.12)">📦</div>
+            <div class="mp-info">
+              <div class="mp-title">Smart Inventory System</div>
+              <div class="mp-meta"><span class="badge badge-easy" style="font-size:0.65rem;">Easy</span><span class="mp-dot"></span><span>6 applicants · 2 submitted</span><span class="mp-dot"></span><span>20 days left</span></div>
+            </div>
+            <div class="mp-actions">
+              <button class="btn btn-primary btn-sm" onclick="navigate('o-applicants')">View Applicants (6)</button>
+              <button class="btn btn-ghost btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="mp-item">
+            <div class="mp-icon" style="background:rgba(245,158,11,0.12)">🎓</div>
+            <div class="mp-info">
+              <div class="mp-title">Student Dropout Early Alert</div>
+              <div class="mp-meta"><span class="badge badge-hard" style="font-size:0.65rem;">Hard</span><span class="badge badge-deadline" style="font-size:0.65rem;">⏰ Closing</span><span class="mp-dot"></span><span>5 applicants · 1 submitted</span><span class="mp-dot"></span><span style="color:var(--warning);">3 days left</span></div>
+            </div>
+            <div class="mp-actions">
+              <button class="btn btn-primary btn-sm" onclick="navigate('o-applicants')">View Applicants (5)</button>
+              <button class="btn btn-ghost btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="mp-item">
+            <div class="mp-icon" style="background:rgba(139,92,246,0.12)">🚗</div>
+            <div class="mp-info">
+              <div class="mp-title">Route Optimization Engine</div>
+              <div class="mp-meta"><span class="badge badge-medium" style="font-size:0.65rem;">Medium</span><span class="mp-dot"></span><span>4 applicants · 1 submitted</span><span class="mp-dot"></span><span>18 days left</span></div>
+            </div>
+            <div class="mp-actions">
+              <button class="btn btn-primary btn-sm" onclick="navigate('o-applicants')">View Applicants (4)</button>
+              <button class="btn btn-ghost btn-sm">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- O: Applicants -->
+      <div class="page" id="page-o-applicants">
+        <button class="btn btn-ghost btn-sm" onclick="navigate('o-problems')" style="margin-bottom:1.25rem;">← Back to Problems</button>
+        <div class="applicants-header">
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <div class="detail-org-logo" style="background:rgba(16,185,129,0.15);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🌱</div>
+            <div>
+              <h2 style="font-family:'Instrument Serif',serif;font-size:1.3rem;color:#fff;font-weight:400;">Carbon Footprint Tracker</h2>
+              <p style="font-size:0.82rem;color:var(--text2);">GreenTech Labs · 14 applicants · 3 submitted solutions</p>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:0.5rem;">
+              <button class="btn btn-ghost btn-sm">Export CSV</button>
+              <span class="badge badge-easy">Easy</span>
+            </div>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-btn active">All (14)</button>
+          <button class="filter-btn">Applied (11)</button>
+          <button class="filter-btn">Submitted (3)</button>
+        </div>
+        <div class="applicant-list">
+          <div class="applicant-item">
+            <div class="app-avatar" style="background:linear-gradient(135deg,#3b82f6,#818cf8)">RS</div>
+            <div>
+              <div class="app-name">Rahul Sharma</div>
+              <div class="app-school">IIT Hyderabad · Full-Stack</div>
+              <div class="app-link">📎 <a href="#">github.com/rahuls/carbon-tracker</a></div>
+            </div>
+            <div class="app-right">
+              <span class="badge badge-submitted">Submitted</span>
+              <button class="btn btn-ghost btn-sm">View Solution</button>
+              <button class="btn btn-success btn-sm">✓ Approve</button>
+            </div>
+          </div>
+          <div class="applicant-item">
+            <div class="app-avatar" style="background:linear-gradient(135deg,#10b981,#059669)">PM</div>
+            <div>
+              <div class="app-name">Priya Mehta</div>
+              <div class="app-school">BITS Pilani · Frontend</div>
+              <div class="app-link">📎 <a href="#">github.com/priyam/footprint-app</a></div>
+            </div>
+            <div class="app-right">
+              <span class="badge badge-submitted">Submitted</span>
+              <button class="btn btn-ghost btn-sm">View Solution</button>
+              <button class="btn btn-success btn-sm">✓ Approve</button>
+            </div>
+          </div>
+          <div class="applicant-item">
+            <div class="app-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">AK</div>
+            <div>
+              <div class="app-name">Arjun Kumar</div>
+              <div class="app-school">NIT Warangal · ML / Data</div>
+              <div class="app-link" style="color:var(--text3);">No submission yet</div>
+            </div>
+            <div class="app-right">
+              <span class="badge badge-applied">Applied</span>
+              <button class="btn btn-ghost btn-sm">View Profile</button>
+            </div>
+          </div>
+          <div class="applicant-item">
+            <div class="app-avatar" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">SR</div>
+            <div>
+              <div class="app-name">Sara Reddy</div>
+              <div class="app-school">VIT University · Full-Stack</div>
+              <div class="app-link">📎 <a href="#">github.com/sara-r/eco-tracker</a></div>
+            </div>
+            <div class="app-right">
+              <span class="badge badge-submitted">Submitted</span>
+              <button class="btn btn-ghost btn-sm">View Solution</button>
+              <button class="btn btn-success btn-sm">✓ Approve</button>
+            </div>
+          </div>
+          <div class="applicant-item">
+            <div class="app-avatar" style="background:linear-gradient(135deg,#14b8a6,#0f766e)">VN</div>
+            <div>
+              <div class="app-name">Vivek Nair</div>
+              <div class="app-school">NSIT Delhi · Backend</div>
+              <div class="app-link" style="color:var(--text3);">No submission yet</div>
+            </div>
+            <div class="app-right">
+              <span class="badge badge-applied">Applied</span>
+              <button class="btn btn-ghost btn-sm">View Profile</button>
+            </div>
+          </div>
+          <div class="applicant-item">
+            <div class="app-avatar" style="background:linear-gradient(135deg,#ec4899,#db2777)">DG</div>
+            <div>
+              <div class="app-name">Diya Gupta</div>
+              <div class="app-school">Manipal University · Full-Stack</div>
+              <div class="app-link" style="color:var(--text3);">No submission yet</div>
+            </div>
+            <div class="app-right">
+              <span class="badge badge-applied">Applied</span>
+              <button class="btn btn-ghost btn-sm">View Profile</button>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+    </div><!-- /page-area -->
+  </div><!-- /main-area -->
+</div><!-- /appShell -->
+ 
+<script>
+/* ═══════════ STATE ═══════════ */
+let currentRole = null;
+let currentPage = null;
+let previousPage = null;
+ 
+const studentNav = [
+  { id:'s-dashboard',    icon:'⊞', label:'Dashboard' },
+  { id:'s-browse',       icon:'🔍', label:'Browse Problems', badge: '12' },
+  { id:'s-applications', icon:'📋', label:'My Applications', badge: '4' },
+  { id:'s-submission',   icon:'📎', label:'Submissions' },
+];
+const orgNav = [
+  { id:'o-dashboard', icon:'⊞', label:'Dashboard' },
+  { id:'o-post',      icon:'＋', label:'Post Problem' },
+  { id:'o-problems',  icon:'📋', label:'My Problems',  badge: '5' },
+  { id:'o-applicants',icon:'👥', label:'Applicants',   badge: '38' },
+];
+ 
+const topbarMeta = {
+  's-dashboard':    { title:'Dashboard',        breadcrumb:'Overview' },
+  's-browse':       { title:'Browse Problems',  breadcrumb:'Find real-world challenges' },
+  's-detail':       { title:'Problem Details',  breadcrumb:'Browse Problems / Details' },
+  's-applications': { title:'My Applications',  breadcrumb:'Track your applied problems' },
+  's-submission':   { title:'Submit Solution',  breadcrumb:'My Applications / Submit' },
+  'o-dashboard':    { title:'Dashboard',        breadcrumb:'Overview' },
+  'o-post':         { title:'Post a Problem',   breadcrumb:'Share a new challenge' },
+  'o-problems':     { title:'My Problems',      breadcrumb:'Manage posted problems' },
+  'o-applicants':   { title:'Applicants',       breadcrumb:'My Problems / Carbon Tracker' },
+};
+
+window.addEventListener('DOMContentLoaded', resumeSession);
+
+function resumeSession() {
+  const user = getCurrentUser();
+  if (!user) return;
+
+  const role = user?.role === 'org' ? 'org' : 'student';
+  currentRole = role;
+
+  document.getElementById('roleSelector').style.display = 'none';
+  document.getElementById('appShell').classList.add('visible');
+  setSidebarUser(user);
+  buildNav(role === 'org' ? orgNav : studentNav);
+  navigate(role === 'org' ? 'o-dashboard' : 's-dashboard');
+}
+
+function setSidebarUser(user) {
+  const avatarLetter = (user?.name?.trim().charAt(0) || 'U').toUpperCase();
+  document.getElementById('sidebarAvatar').textContent = avatarLetter;
+  document.getElementById('sidebarName').textContent = user?.name || 'IndustrySolve User';
+  const label = user?.role === 'org' ? 'Organization' : 'Student';
+  document.getElementById('sidebarRoleLabel').textContent = label;
+  document.getElementById('sidebarBadge').textContent = user?.role === 'org' ? 'Org' : 'Student';
+  document.getElementById('sidebarBadge').className = 'user-badge ' + (user?.role === 'org' ? 'badge-org' : 'badge-student');
+}
+
+/* ═══════════ LAUNCH ═══════════ */
+function launchApp(role) {
+  currentRole = role;
+  document.getElementById('roleSelector').style.display = 'none';
+  document.getElementById('appShell').classList.add('visible');
+ 
+  // Sidebar user
+  if (role === 'student') {
+    document.getElementById('sidebarAvatar').textContent = 'R';
+    document.getElementById('sidebarName').textContent   = 'Rahul Sharma';
+    document.getElementById('sidebarRoleLabel').textContent = 'Student';
+    document.getElementById('sidebarBadge').textContent  = 'Student';
+    document.getElementById('sidebarBadge').className    = 'user-badge badge-student';
+    buildNav(studentNav);
+    navigate('s-dashboard');
+  } else {
+    document.getElementById('sidebarAvatar').textContent = 'G';
+    document.getElementById('sidebarName').textContent   = 'GreenTech Labs';
+    document.getElementById('sidebarRoleLabel').textContent = 'Organization';
+    document.getElementById('sidebarBadge').textContent  = 'Org';
+    document.getElementById('sidebarBadge').className    = 'user-badge badge-org';
+    buildNav(orgNav);
+    navigate('o-dashboard');
+  }
+}
+ 
+function buildNav(items) {
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = '<div class="nav-section-label">Navigation</div>';
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'nav-item';
+    el.id = 'nav-' + item.id;
+    el.onclick = () => navigate(item.id);
+    el.innerHTML = `
+      <span class="nav-icon">${item.icon}</span>
+      <span>${item.label}</span>
+      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+    `;
+    nav.appendChild(el);
+  });
+}
+ 
+function navigate(pageId) {
+  if (currentPage) {
+    document.getElementById('page-' + currentPage)?.classList.remove('active');
+    document.getElementById('nav-' + currentPage)?.classList.remove('active');
+  }
+  previousPage = currentPage;
+  currentPage = pageId;
+  document.getElementById('page-' + pageId)?.classList.add('active');
+  document.getElementById('nav-' + pageId)?.classList.add('active');
+  const meta = topbarMeta[pageId] || { title: pageId, breadcrumb: '' };
+  document.getElementById('topbarTitle').textContent     = meta.title;
+  document.getElementById('topbarBreadcrumb').textContent = meta.breadcrumb;
+  document.getElementById('pageArea').scrollTo(0, 0);
+}
+ 
+function exitApp() {
+  currentRole = null; currentPage = null;
+  logoutUser();
+  document.getElementById('appShell').classList.remove('visible');
+  document.getElementById('roleSelector').style.display = 'flex';
+  document.getElementById('sidebarNav').innerHTML = '';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('submissionBanner').classList.remove('show');
+  document.getElementById('postBanner').classList.remove('show');
+}
+ 
+/* ═══════════ PROBLEM DETAIL ═══════════ */
+const problems = {
+  p1: { org:'GreenTech Labs', orgLogo:'🌱', orgBg:'rgba(16,185,129,0.15)', title:'Carbon Footprint Tracker', diff:'Easy', domain:'Full-Stack', deadline:'April 20, 2026', applicants:'14 students', badges:'<span class="badge badge-easy">Easy</span><span class="badge badge-new">✦ New</span><span class="badge badge-new">Full-Stack</span>', desc:'Build a web application that helps small businesses track, visualize, and reduce their carbon footprint across energy usage, transportation, and waste categories.', reqs:['User authentication and multi-company support','Dashboard with real-time emissions visualization','Category-based input forms (energy, travel, waste)','Monthly PDF report generation','RESTful API backend with a proper database schema'] },
+  p2: { org:'MediCore', orgLogo:'🏥', orgBg:'rgba(239,68,68,0.15)', title:'Patient Wait-Time Predictor', diff:'Medium', domain:'ML / Data Science', deadline:'April 13, 2026', applicants:'9 students', badges:'<span class="badge badge-medium">Medium</span><span class="badge badge-hot">🔥 Hot</span><span class="badge badge-new">ML / Data</span>', desc:'Train an ML model to predict hospital wait times using historical patient data and appointment records. Deploy as a real-time API for clinic staff.', reqs:['Data cleaning and EDA on provided dataset','Model training (Random Forest / XGBoost)','REST API deployment (FastAPI or Flask)','Simple frontend dashboard for predictions','Model performance metrics report'] },
+  p3: { org:'RetailX', orgLogo:'📦', orgBg:'rgba(59,130,246,0.15)', title:'Smart Inventory System', diff:'Easy', domain:'Backend', deadline:'April 28, 2026', applicants:'6 students', badges:'<span class="badge badge-easy">Easy</span><span class="badge badge-new">Backend</span>', desc:'Design a RESTful API for real-time inventory tracking with low-stock alerts, supplier integration, and role-based access for warehouse staff.', reqs:['RESTful API with CRUD for products','Real-time low-stock email/notification alerts','Role-based access: Admin, Manager, Staff','Supplier API mock integration','Swagger API documentation'] },
+  p4: { org:'EduBridge NGO', orgLogo:'🎓', orgBg:'rgba(245,158,11,0.15)', title:'Student Dropout Early Alert', diff:'Hard', domain:'Analytics', deadline:'April 11, 2026', applicants:'5 students', badges:'<span class="badge badge-hard">Hard</span><span class="badge badge-deadline">⏰ Closing</span><span class="badge badge-new">Analytics</span>', desc:'Build a predictive analytics dashboard that identifies at-risk students based on engagement, attendance, and grade patterns using real anonymized data.', reqs:['Exploratory data analysis on student dataset','Predictive model with ≥80% accuracy','Interactive dashboard (React or Streamlit)','Risk score per student with explanations','Admin email alert system for counselors'] },
+  p5: { org:'UrbanMove', orgLogo:'🚗', orgBg:'rgba(139,92,246,0.15)', title:'Route Optimization Engine', diff:'Medium', domain:'Algorithms', deadline:'April 26, 2026', applicants:'4 students', badges:'<span class="badge badge-medium">Medium</span><span class="badge badge-new">✦ New</span><span class="badge badge-new">Algorithms</span>', desc:'Implement Dijkstra / A* graph algorithm to find optimal delivery routes for a last-mile logistics startup in metro cities, minimizing time and fuel.', reqs:['Graph data structure implementation','Dijkstra or A* algorithm','Live map visualization (Leaflet.js)','Multi-stop route planning','Performance benchmarking report'] },
+  p6: { org:'FinlitIndia', orgLogo:'💰', orgBg:'rgba(20,184,166,0.15)', title:'Personal Finance Dashboard', diff:'Easy', domain:'Full-Stack', deadline:'May 3, 2026', applicants:'7 students', badges:'<span class="badge badge-easy">Easy</span><span class="badge badge-new">Full-Stack</span>', desc:'Create an interactive dashboard that helps users visualize monthly spending habits, set savings goals, and receive personalized financial tips.', reqs:['CSV/manual expense import','Spending breakdown chart by category','Goal-setting and progress tracker','Monthly summary PDF export','Mobile-responsive UI'] },
+};
+ 
+function openProblemDetail(pid) {
+  const p = problems[pid];
+  if (!p) return;
+  document.getElementById('detailOrgLogo').textContent = p.orgLogo;
+  document.getElementById('detailOrgLogo').style.background = p.orgBg;
+  document.getElementById('detailOrgName').textContent = p.org;
+  document.getElementById('detailTitle').textContent = p.title;
+  document.getElementById('detailBadges').innerHTML = p.badges;
+  document.getElementById('detailDesc').textContent = p.desc;
+  document.getElementById('detailDiff').innerHTML = p.badges.split('</span>')[0] + '</span>';
+  document.getElementById('detailDeadline').textContent = p.deadline;
+  document.getElementById('detailApplicants').textContent = p.applicants;
+  document.getElementById('detailDomain').textContent = p.domain;
+  const reqList = document.getElementById('detailReqs');
+  reqList.innerHTML = p.reqs.map(r => `<li>${r}</li>`).join('');
+  navigate('s-detail');
+}
+ 
+function goBack() {
+  navigate(previousPage || 's-browse');
+}
+ 
+function goBackToApps() {
+  navigate('s-applications');
+}
+ 
+/* ═══════════ ACTIONS ═══════════ */
+function applyNow() {
+  const btn = event.target;
+  btn.textContent = '✓ Applied!';
+  btn.style.background = 'rgba(16,185,129,0.15)';
+  btn.style.boxShadow = 'none';
+  btn.style.color = '#34d399';
+  btn.style.border = '1px solid rgba(16,185,129,0.25)';
+  btn.disabled = true;
+}
+ 
+function submitSolution() {
+  const link = document.getElementById('githubLink').value;
+  if (!link) { document.getElementById('githubLink').focus(); document.getElementById('githubLink').style.borderColor = 'var(--danger)'; return; }
+  document.getElementById('submissionBanner').classList.add('show');
+  document.getElementById('pageArea').scrollTo(0, 0);
+  // Update status dot
+  const dots = document.querySelectorAll('#page-s-submission .status-dot');
+  if (dots[1]) { dots[1].className = 'status-dot dot-success'; }
+  const times = document.querySelectorAll('#page-s-submission .status-time');
+  if (times[1]) times[1].textContent = 'Just now · Submitted';
+  if (dots[2]) { dots[2].className = 'status-dot dot-pending'; }
+  if (times[2]) times[2].textContent = 'Under review…';
+}
+ 
+function postProblem() {
+  document.getElementById('postBanner').classList.add('show');
+  document.getElementById('pageArea').scrollTo(0, 0);
+}
+ 
+/* ═══════════ FILTER BUTTONS ═══════════ */
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('filter-btn')) {
+    const parent = e.target.parentElement;
+    parent.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+});
+ 
+/* ═══════════ SEARCH ═══════════ */
+function handleSearch(val) {
+  if (!val || currentRole !== 'student') return;
+  const cards = document.querySelectorAll('#page-s-browse .problem-card');
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
+</body>
+</html>
