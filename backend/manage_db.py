@@ -51,24 +51,36 @@ def delete_all_users():
 
 def get_database_stats():
     """Show database statistics"""
-    db_path = os.path.join(os.path.dirname(__file__), 'industrysolve.db')
-    if not os.path.exists(db_path):
-        print(f"\n❌ Database file not found: {db_path}\n")
-        return
+    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
     
-    file_size = os.path.getsize(db_path)
-    file_size_mb = file_size / (1024 * 1024)
+    print("\n📊 Database Statistics:")
+    print("=" * 50)
+    
+    if 'sqlite' in db_uri:
+        db_path = db_uri.replace('sqlite:///', '')
+        if os.path.exists(db_path):
+            file_size = os.path.getsize(db_path)
+            file_size_mb = file_size / (1024 * 1024)
+            print(f"Database Type: SQLite")
+            print(f"Database File: {os.path.abspath(db_path)}")
+            print(f"File Size: {file_size:,} bytes ({file_size_mb:.2f} MB)")
+        else:
+            print(f"Database Type: SQLite (file not found locally)")
+    else:
+        # For Postgres/other remote DBs
+        db_type = db_uri.split(':')[0]
+        print(f"Database Type: {db_type.upper()}")
+        print(f"Database Status: Remote Connection")
     
     with app.app_context():
-        user_count = User.query.count()
-        
-        print("\n📊 Database Statistics:")
-        print("=" * 50)
-        print(f"Database File: {os.path.abspath(db_path)}")
-        print(f"File Size: {file_size:,} bytes ({file_size_mb:.2f} MB)")
-        print(f"Total Users: {user_count}")
-        print("=" * 50)
-        print()
+        try:
+            user_count = User.query.count()
+            print(f"Total Users: {user_count}")
+        except Exception as e:
+            print(f"Error fetching user count: {e}")
+            
+    print("=" * 50)
+    print()
 
 def main():
     print("\n🔧 IndustrySolve Database Manager\n")
@@ -101,9 +113,11 @@ def main():
 if __name__ == '__main__':
     try:
         print("Connecting to database...")
+        # Check if database is accessible
         with app.app_context():
-            user_count = User.query.count()
+            db.engine.connect()
+            print("✅ Database connection established.")
         main()
     except Exception as e:
-        print(f"\n❌ Error: {e}")
-        print("Make sure the backend server is running or database is accessible.\n")
+        print(f"\n❌ Database Connection Error: {e}")
+        print("Make sure your DATABASE_URL is correct and the database is accessible.\n")

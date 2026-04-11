@@ -8,8 +8,12 @@ from datetime import datetime
 app = Flask(__name__)
 
 # ════════════ DATABASE CONFIGURATION ════════════
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{basedir}/industrysolve.db'
+db_url = os.environ.get('DATABASE_URL')
+# For SQLAlchemy 1.4+ compatibility (Render uses postgres:// by default)
+if db_url and db_url.startswith('postgres://'):
+    db_url = db_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'postgresql://lunadb_klet_user:lpAqXidCpdgdTUQ2iEfrUKebvmNyilBu@dpg-d7ckbtn41pts73dha9q0-a.oregon-postgres.render.com/lunadb_klet'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
@@ -94,9 +98,10 @@ def api_get_all_users():
 
 @app.route('/api/health', methods=['GET'])
 def health():
+    db_type = 'PostgreSQL' if 'postgresql' in app.config['SQLALCHEMY_DATABASE_URI'] else 'SQLite'
     return jsonify({
         'status': 'Backend is running',
-        'database': 'SQLite',
+        'database': db_type,
         'timestamp': str(datetime.now())
     }), 200
 
