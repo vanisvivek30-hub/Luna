@@ -4,7 +4,7 @@
  */
 
 // Load configuration (will be updated by run_with_ngrok.py)
-let API_BASE_URL = 'http://localhost:5000/api'; // Default fallback
+let API_BASE_URL = 'https://luna-2-62hl.onrender.com/api'; // Default fallback
 
 // Try to load config from config.js if it exists
 try {
@@ -18,7 +18,7 @@ try {
     const currentProtocol = window.location.protocol;
 
     if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
-      API_BASE_URL = 'http://localhost:5000/api';
+      API_BASE_URL = 'https://luna-2-62hl.onrender.com/api';
     } else {
       // Assume ngrok or production - API should be on same domain
       API_BASE_URL = `${currentProtocol}//${currentHost}/api`;
@@ -75,7 +75,7 @@ async function apiSignup(userData) {
     console.error('Signup error:', error);
     return {
       success: false,
-      message: error.message || 'Connection error. Make sure backend is running on http://localhost:5000'
+      message: error.message || 'Connection error. Make sure backend is running on Render.'
     };
   }
 }
@@ -117,7 +117,7 @@ async function apiSignin(credentials) {
     console.error('Sign in error:', error);
     return {
       success: false,
-      message: error.message || 'Connection error. Make sure backend is running on http://localhost:5000'
+      message: error.message || 'Connection error. Make sure backend is running on Render.'
     };
   }
 }
