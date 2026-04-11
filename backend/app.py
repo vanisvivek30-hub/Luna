@@ -22,10 +22,13 @@ db.init_app(app)
 # Enable CORS
 CORS(app)
 
-# ════════════ CREATE DATABASE TABLES ════════════
-with app.app_context():
-    db.create_all()
-    print("✅ Database initialized at:", app.config['SQLALCHEMY_DATABASE_URI'])
+try:
+    with app.app_context():
+        db.create_all()
+        print("✅ Database initialized successfully", flush=True)
+except Exception as e:
+    print(f"❌ Database initialization failed: {e}", flush=True)
+    # Don't exit here, let the app try to start anyway or gunicorn==23.0.0 will catch the startup failure
 
 # ════════════ AUTHENTICATION ENDPOINTS ════════════
 
