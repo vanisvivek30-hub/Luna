@@ -115,6 +115,6 @@ def server_error(error):
 # ════════════ MAIN ENTRY POINT ════════════
 
 if __name__ == '__main__':
-    print("🚀 Backend starting...")
+    print("🚀 Backend starting on Render...")
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
